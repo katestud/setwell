@@ -1,35 +1,42 @@
 import './App.css'
 
-import { DiamondIcon } from './assets/diamond'
-import { PillIcon } from './assets/pill'
-import reactLogo from './assets/react.svg'
-import { useState } from 'react'
-import viteLogo from '/vite.svg'
+import { Card } from './components/card'
 
 function App() {
-  const [count, setCount] = useState(0)
+  // const red = "#ff0001"
+  // const green = "#028100"
+  // const purple = "#330481"
+
+  const cards = []
+
+  const colors = ["#ff0001", "#028100", "#330481"]
+  const shapes: Array<'diamond' | 'squiggle' | 'pill'> = ["diamond", "squiggle", "pill"]
+  const counts: Array<1 | 2 | 3> = [1, 2, 3]
+  const shadings: Array<'solid' | 'empty' | 'shaded'> = ["solid", "empty", "shaded"]
+
+  for (const color of colors) {
+    for (const shape of shapes) {
+      for (const count of counts) {
+        for (const shading of shadings) {
+          cards.push(
+            <Card
+              key={`${color}-${shape}-${count}-${shading}`}
+              color={color}
+              shape={shape}
+              count={count}
+              shading={shading}
+            />
+          )
+        }
+      }
+    }
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        < DiamondIcon shading='shaded' />
-        < DiamondIcon shading='empty' />
-        < DiamondIcon shading='solid' />
-        < PillIcon shading='shaded' />
-        < PillIcon shading='empty' />
-        < PillIcon shading='solid' />
+      <h1>Lot</h1>
+      <div className="card-container">
+        {cards}
       </div>
     </>
   )
