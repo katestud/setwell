@@ -1,6 +1,7 @@
 import './App.css'
 
-import DiamondIcon from './assets/diamond'
+import { DiamondIcon } from './assets/diamond'
+import { PillIcon } from './assets/pill'
 import reactLogo from './assets/react.svg'
 import { useState } from 'react'
 import viteLogo from '/vite.svg'
@@ -23,7 +24,12 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        < DiamondIcon />
+        < DiamondIcon shading='shaded' />
+        < DiamondIcon shading='empty' />
+        < DiamondIcon shading='solid' />
+        < PillIcon shading='shaded' />
+        < PillIcon shading='empty' />
+        < PillIcon shading='solid' />
       </div>
     </>
   )
