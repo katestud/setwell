@@ -2,7 +2,7 @@
   "name": "lot",
   "private": true,
   "version": "0.0.0",
-  "type": "CommonJS",
+  "type": "commonjs",
   "main": "electron.js",
   "scripts": {
     "dev": "vite",
