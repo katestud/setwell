@@ -31,6 +31,7 @@ body {
   justify-content: center;
   align-content: space-around;
   gap: 10px;
+  transition: all 0.2s ease;
 }
 
 .icon {
@@ -40,4 +41,15 @@ body {
   color: #fff;
   border-radius: 8px;
   stroke-width: 4px;
+}
+
+.card.selected {
+  outline: 3px solid #4a90e2;
+  transform: scale(1.02);
+}
+
+.selected-count {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 1.2rem;
 }

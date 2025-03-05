@@ -10,9 +10,17 @@ interface CardProps {
   count: IconCount;
   shading: Shading;
   onClick: () => void;
+  selected?: boolean;
 }
 
-export function Card({ color, shape, count, shading, onClick }: CardProps) {
+export function Card({
+  color,
+  shape,
+  count,
+  shading,
+  onClick,
+  selected,
+}: CardProps) {
   // TODO: Extract this to a React hook that does "useIconShading hook" that returns the style
 
   let component = <></>;
@@ -29,7 +37,6 @@ export function Card({ color, shape, count, shading, onClick }: CardProps) {
       break;
   }
 
-  // Generate an array of components based on the count
   const components = Array.from({ length: count }, (_, index) => (
     <div key={index} className="icon">
       {component}
@@ -37,7 +44,7 @@ export function Card({ color, shape, count, shading, onClick }: CardProps) {
   ));
 
   return (
-    <div className="card" onClick={onClick}>
+    <div className={`card ${selected ? "selected" : ""}`} onClick={onClick}>
       {components}
     </div>
   );
