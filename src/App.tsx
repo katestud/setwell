@@ -7,6 +7,7 @@ import { Card } from "./components/card";
 
 function App() {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
+  const [setsFound, setSetsFound] = useState(0);
 
   const { cards, cardData } = useMemo(() => {
     const cardData: Record<string, CardInfo> = {};
@@ -90,6 +91,7 @@ function App() {
 
       if (success) {
         console.log("You win! That's a set!");
+        setSetsFound((prevSetsFound) => prevSetsFound + 1);
       } else {
         console.log(
           "Try again! The cards didn't have the right combination for ",
@@ -128,9 +130,7 @@ function App() {
           );
         })}
       </div>
-      <div className="selected-count">
-        Selected cards: {selectedCards.length}/3
-      </div>
+      <div className="found-set-count">Sets found: {setsFound}</div>
     </>
   );
 }
