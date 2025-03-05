@@ -1,7 +1,7 @@
 import "./App.css";
 
 import type { CardInfo, IconColor, IconCount, Shading, Shape } from "./types";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Card } from "./components/card";
 
@@ -10,7 +10,7 @@ function App() {
 
   const { cards, cardData } = useMemo(() => {
     const cardData: Record<string, CardInfo> = {};
-    const allCards: string[] = []; // Store card IDs instead of components
+    const allCards: string[] = [];
 
     const colors: IconColor[] = ["#ff0001", "#028100", "#330481"];
     const shapes: Shape[] = ["diamond", "squiggle", "pill"];
@@ -29,7 +29,6 @@ function App() {
       }
     }
 
-    // Shuffle once during initialization
     const shuffledCards = shuffle([...allCards]).slice(0, 12);
 
     return { cards: shuffledCards, cardData };
@@ -48,9 +47,58 @@ function App() {
       return [...prevSelected, id];
     });
 
+    console.log("Selected cards:", selectedCards);
+
     console.log("Card Clicked:", id);
     console.log("Card Data:", cardData[id]);
   };
+
+  useEffect(() => {
+    if (selectedCards.length === 3) {
+      const colorsCount = [
+        ...new Set(selectedCards.map((a) => cardData[a].color)),
+      ];
+      const shapesCount = [
+        ...new Set(selectedCards.map((a) => cardData[a].shape)),
+      ];
+      const countsCount = [
+        ...new Set(selectedCards.map((a) => cardData[a].count)),
+      ];
+      const shadingsCount = [
+        ...new Set(selectedCards.map((a) => cardData[a].shading)),
+      ];
+
+      let success = true;
+      let badProps = [];
+
+      if (colorsCount.length === 2) {
+        success = false;
+        badProps.push("color");
+      }
+      if (shapesCount.length === 2) {
+        success = false;
+        badProps.push("shape");
+      }
+      if (countsCount.length === 2) {
+        success = false;
+        badProps.push("count");
+      }
+      if (shadingsCount.length === 2) {
+        success = false;
+        badProps.push("shading");
+      }
+
+      if (success) {
+        console.log("You win! That's a set!");
+      } else {
+        console.log(
+          "Try again! The cards didn't have the right combination for ",
+          badProps.join(", ")
+        );
+        setSelectedCards([]);
+      }
+    }
+  }, [selectedCards]);
 
   function shuffle(array: any[]) {
     const newArray = [...array];
