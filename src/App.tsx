@@ -30,7 +30,7 @@ function App() {
       }
     }
 
-    const shuffledCards = shuffle([...allCards]).slice(0, 12);
+    const shuffledCards = shuffle([...allCards]).slice(0, 16);
 
     return { cards: shuffledCards, cardData };
   }, []);
@@ -113,7 +113,7 @@ function App() {
 
   return (
     <>
-      <h1>Lot</h1>
+      <h1>Setwell</h1>
       <div className="card-container">
         {cards.map((cardId) => {
           const data = cardData[cardId];
