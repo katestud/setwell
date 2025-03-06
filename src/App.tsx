@@ -1,18 +1,27 @@
 import "./App.css";
 
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import type { CardInfo, IconColor, IconCount, Shading, Shape } from "./types";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Card } from "./components/card";
 import Confetti from "react-confetti";
+import React from "react";
 
 function App() {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
+  const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [setsFound, setSetsFound] = useState(0);
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [cards, setCards] = useState<string[]>([]);
+  const [remainingCards, setRemainingCards] = useState<string[]>([]);
+  const [cardData, setCardData] = useState<Record<string, CardInfo>>({});
+  const nodeRefs = useRef<
+    Record<string, React.RefObject<HTMLDivElement | null>>
+  >({});
 
-  const { cards, cardData } = useMemo(() => {
+  useEffect(() => {
     const cardData: Record<string, CardInfo> = {};
     const allCards: string[] = [];
 
@@ -33,14 +42,18 @@ function App() {
       }
     }
 
-    const shuffledCards = shuffle([...allCards]).slice(0, 16);
-
-    return { cards: shuffledCards, cardData };
+    const shuffledCards = shuffle([...allCards]);
+    setCards(shuffledCards.slice(0, 16));
+    setRemainingCards(shuffledCards.slice(16));
+    setCardData(cardData);
   }, []);
 
-  const handleCardClick = (id: string) => {
+  const handleCardClick = (id: string, index: number) => {
     setSelectedCards((prevSelected) => {
       if (prevSelected.includes(id)) {
+        setSelectedIndices((prevIndices) =>
+          prevIndices.filter((i) => i !== index)
+        );
         return prevSelected.filter((cardId) => cardId !== id);
       }
 
@@ -48,6 +61,7 @@ function App() {
         return prevSelected;
       }
 
+      setSelectedIndices((prevIndices) => [...prevIndices, index]);
       return [...prevSelected, id];
     });
 
@@ -95,13 +109,26 @@ function App() {
         console.log("You win! That's a set!");
         setSetsFound((prevSetsFound) => prevSetsFound + 1);
         setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 3000); // Hide confetti after 3 seconds
+        setTimeout(() => setShowConfetti(false), 4000); // Hide confetti after 3 seconds
+
+        setTimeout(() => {
+          setCards((prevCards) => {
+            const newCards = [...prevCards];
+            selectedIndices.forEach((index) => {
+              newCards[index] = remainingCards.pop()!;
+            });
+            return newCards;
+          });
+          setSelectedCards([]);
+          setSelectedIndices([]);
+        }, 300); // Delay to allow exit animation
       } else {
         const message = `Try again! The cards didn't have the right combination for ${badProps.join(
           ", "
         )}`;
         setModalMessage(message);
         setSelectedCards([]);
+        setSelectedIndices([]);
       }
     }
   }, [selectedCards]);
@@ -119,20 +146,34 @@ function App() {
     <>
       <h1>Setwell</h1>
       <div className="card-container">
-        {cards.map((cardId) => {
-          const data = cardData[cardId];
-          return (
-            <Card
-              key={cardId}
-              onClick={() => handleCardClick(cardId)}
-              color={data.color}
-              shape={data.shape}
-              count={data.count}
-              shading={data.shading}
-              selected={selectedCards.includes(cardId)}
-            />
-          );
-        })}
+        <TransitionGroup component={null}>
+          {cards.map((cardId, index) => {
+            const data = cardData[cardId];
+            if (!nodeRefs.current[cardId]) {
+              nodeRefs.current[cardId] = React.createRef();
+            }
+            return (
+              <CSSTransition
+                key={cardId}
+                timeout={300}
+                classNames="fade"
+                nodeRef={nodeRefs.current[cardId]}
+              >
+                <div ref={nodeRefs.current[cardId]}>
+                  <Card
+                    key={cardId}
+                    onClick={() => handleCardClick(cardId, index)}
+                    color={data.color}
+                    shape={data.shape}
+                    count={data.count}
+                    shading={data.shading}
+                    selected={selectedCards.includes(cardId)}
+                  />
+                </div>
+              </CSSTransition>
+            );
+          })}
+        </TransitionGroup>
       </div>
       <div className="found-set-count">Sets found: {setsFound}</div>
       {modalMessage && (
