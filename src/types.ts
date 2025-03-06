@@ -1,11 +1,29 @@
-export type Shape = "diamond" | "squiggle" | "pill";
-export type Shading = "solid" | "empty" | "shaded";
-export type IconColor = "#ff0001" | "#028100" | "#330481";
+export const COLORS = {
+  RED: "#ff0001",
+  GREEN: "#028100",
+  PURPLE: "#330481",
+} as const;
+export type IconColor = (typeof COLORS)[keyof typeof COLORS];
+
+export const SHAPES = {
+  DIAMOND: "diamond",
+  SQUIGGLE: "squiggle",
+  PILL: "pill",
+} as const;
+export type Shape = (typeof SHAPES)[keyof typeof SHAPES];
+
+export const SHADINGS = {
+  SOLID: "solid",
+  EMPTY: "empty",
+  SHADED: "shaded",
+} as const;
+export type Shading = (typeof SHADINGS)[keyof typeof SHADINGS];
+
 export type IconCount = 1 | 2 | 3;
 
 export interface CardInfo {
   color: IconColor;
   shape: Shape;
-  count: 1 | 2 | 3;
+  count: IconCount;
   shading: Shading;
 }

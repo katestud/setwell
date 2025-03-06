@@ -1,12 +1,13 @@
 import "./App.css";
 
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import type { CardInfo, IconColor, IconCount, Shading, Shape } from "./types";
+import { type CardInfo } from "./types";
 import { useEffect, useRef, useState } from "react";
 
 import { Card } from "./components/card";
 import Confetti from "react-confetti";
 import React from "react";
+import { constructDeck } from "./utils/deck";
 
 function App() {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
@@ -22,26 +23,7 @@ function App() {
   >({});
 
   useEffect(() => {
-    const cardData: Record<string, CardInfo> = {};
-    const allCards: string[] = [];
-
-    const colors: IconColor[] = ["#ff0001", "#028100", "#330481"];
-    const shapes: Shape[] = ["diamond", "squiggle", "pill"];
-    const counts: IconCount[] = [1, 2, 3];
-    const shadings: Shading[] = ["solid", "empty", "shaded"];
-
-    for (const color of colors) {
-      for (const shape of shapes) {
-        for (const count of counts) {
-          for (const shading of shadings) {
-            const cardId = `${color}-${shape}-${count}-${shading}`;
-            cardData[cardId] = { color, shape, count, shading };
-            allCards.push(cardId);
-          }
-        }
-      }
-    }
-
+    const { cardData, allCards } = constructDeck();
     const shuffledCards = shuffle([...allCards]);
     setCards(shuffledCards.slice(0, 16));
     setRemainingCards(shuffledCards.slice(16));
@@ -114,9 +96,6 @@ function App() {
             }
             return card;
           });
-
-          console.log("Cards in play:", newCards.filter((c) => c).length);
-          console.log("Remaining cards:", newRemainingCards.length);
 
           setCards(newCards);
           setRemainingCards(newRemainingCards);

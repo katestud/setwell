@@ -1,4 +1,10 @@
-import type { IconColor, IconCount, Shading, Shape } from "../types";
+import {
+  SHAPES,
+  type IconColor,
+  type IconCount,
+  type Shading,
+  type Shape,
+} from "../types";
 
 import { DiamondIcon } from "./diamond";
 import { PillIcon } from "./pill";
@@ -26,13 +32,13 @@ export function Card({
   let component = <></>;
 
   switch (shape) {
-    case "diamond":
+    case SHAPES.DIAMOND:
       component = <DiamondIcon color={color} shading={shading} />;
       break;
-    case "pill":
+    case SHAPES.PILL:
       component = <PillIcon color={color} shading={shading} />;
       break;
-    case "squiggle":
+    case SHAPES.SQUIGGLE:
       component = <SquiggleIcon color={color} shading={shading} />;
       break;
   }
