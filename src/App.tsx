@@ -2,7 +2,7 @@ import "./App.css";
 
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import type { CardInfo, IconColor, IconCount, Shading, Shape } from "./types";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Card } from "./components/card";
 import Confetti from "react-confetti";
