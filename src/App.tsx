@@ -17,7 +17,6 @@ function App() {
   const [cards, setCards] = useState<string[]>([]);
   const [remainingCards, setRemainingCards] = useState<string[]>([]);
   const [cardData, setCardData] = useState<Record<string, CardInfo>>({});
-  const [removingCards, setRemovingCards] = useState<string[]>([]);
   const nodeRefs = useRef<
     Record<string, React.RefObject<HTMLDivElement | null>>
   >({});
@@ -65,10 +64,6 @@ function App() {
       setSelectedIndices((prevIndices) => [...prevIndices, index]);
       return [...prevSelected, id];
     });
-
-    console.log("Selected cards:", selectedCards);
-    console.log("Card Clicked:", id);
-    console.log("Card Data:", cardData[id]);
   };
 
   useEffect(() => {
@@ -107,24 +102,27 @@ function App() {
       }
 
       if (success) {
-        console.log("You win! That's a set!");
         setSetsFound((prevSetsFound) => prevSetsFound + 1);
         setShowConfetti(true);
-        setRemovingCards(selectedCards);
-        setTimeout(() => setShowConfetti(false), 4000); // Hide confetti after 3 seconds
+        setTimeout(() => setShowConfetti(false), 4000);
 
         setTimeout(() => {
-          setCards((prevCards) => {
-            const newCards = [...prevCards];
-            selectedIndices.forEach((index) => {
-              newCards[index] = remainingCards.pop()!;
-            });
-            return newCards;
+          const newRemainingCards = [...remainingCards];
+          const newCards = cards.map((card, idx) => {
+            if (selectedIndices.includes(idx)) {
+              return newRemainingCards.pop() || ""; // Return empty string if no more cards
+            }
+            return card;
           });
+
+          console.log("Cards in play:", newCards.filter((c) => c).length);
+          console.log("Remaining cards:", newRemainingCards.length);
+
+          setCards(newCards);
+          setRemainingCards(newRemainingCards);
           setSelectedCards([]);
           setSelectedIndices([]);
-          setRemovingCards([]);
-        }, 300); // Delay to allow exit animation
+        }, 300);
       } else {
         const message = `Try again! The cards didn't have the right combination for ${badProps.join(
           ", "
@@ -161,33 +159,31 @@ function App() {
                 timeout={300}
                 classNames="fade"
                 nodeRef={nodeRefs.current[cardId]}
-                onExited={() => {
-                  if (removingCards.includes(cardId)) {
-                    setCards((prevCards) => {
-                      const newCards = [...prevCards];
-                      newCards[index] = remainingCards.pop()!;
-                      return newCards;
-                    });
-                  }
-                }}
               >
                 <div ref={nodeRefs.current[cardId]}>
-                  <Card
-                    key={cardId}
-                    onClick={() => handleCardClick(cardId, index)}
-                    color={data.color}
-                    shape={data.shape}
-                    count={data.count}
-                    shading={data.shading}
-                    selected={selectedCards.includes(cardId)}
-                  />
+                  {cardId && (
+                    <Card
+                      key={cardId}
+                      onClick={() => handleCardClick(cardId, index)}
+                      color={data.color}
+                      shape={data.shape}
+                      count={data.count}
+                      shading={data.shading}
+                      selected={selectedCards.includes(cardId)}
+                    />
+                  )}
                 </div>
               </CSSTransition>
             );
           })}
         </TransitionGroup>
       </div>
-      <div className="found-set-count">Sets found: {setsFound}</div>
+      <div className="game-stats">
+        <div className="found-set-count">Sets found: {setsFound}</div>
+        <div className="remaining-cards-count">
+          Cards remaining: {remainingCards.length}
+        </div>
+      </div>
       {modalMessage && (
         <div className="modal">
           <div className="modal-content">
