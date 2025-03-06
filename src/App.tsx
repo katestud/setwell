@@ -4,11 +4,13 @@ import type { CardInfo, IconColor, IconCount, Shading, Shape } from "./types";
 import { useEffect, useMemo, useState } from "react";
 
 import { Card } from "./components/card";
+import Confetti from "react-confetti";
 
 function App() {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [setsFound, setSetsFound] = useState(0);
   const [modalMessage, setModalMessage] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const { cards, cardData } = useMemo(() => {
     const cardData: Record<string, CardInfo> = {};
@@ -91,8 +93,9 @@ function App() {
 
       if (success) {
         console.log("You win! That's a set!");
-        setModalMessage("Great Job!");
         setSetsFound((prevSetsFound) => prevSetsFound + 1);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000); // Hide confetti after 3 seconds
       } else {
         const message = `Try again! The cards didn't have the right combination for ${badProps.join(
           ", "
@@ -142,6 +145,7 @@ function App() {
           </div>
         </div>
       )}
+      {showConfetti && <Confetti />}
     </>
   );
 }
