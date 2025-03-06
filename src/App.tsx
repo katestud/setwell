@@ -91,12 +91,12 @@ function App() {
 
       if (success) {
         console.log("You win! That's a set!");
+        setModalMessage("Great Job!");
         setSetsFound((prevSetsFound) => prevSetsFound + 1);
       } else {
         const message = `Try again! The cards didn't have the right combination for ${badProps.join(
           ", "
         )}`;
-        console.log(message);
         setModalMessage(message);
         setSelectedCards([]);
       }
