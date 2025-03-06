@@ -8,6 +8,7 @@ import { Card } from "./components/card";
 function App() {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [setsFound, setSetsFound] = useState(0);
+  const [modalMessage, setModalMessage] = useState<string | null>(null);
 
   const { cards, cardData } = useMemo(() => {
     const cardData: Record<string, CardInfo> = {};
@@ -49,7 +50,6 @@ function App() {
     });
 
     console.log("Selected cards:", selectedCards);
-
     console.log("Card Clicked:", id);
     console.log("Card Data:", cardData[id]);
   };
@@ -93,10 +93,11 @@ function App() {
         console.log("You win! That's a set!");
         setSetsFound((prevSetsFound) => prevSetsFound + 1);
       } else {
-        console.log(
-          "Try again! The cards didn't have the right combination for ",
-          badProps.join(", ")
-        );
+        const message = `Try again! The cards didn't have the right combination for ${badProps.join(
+          ", "
+        )}`;
+        console.log(message);
+        setModalMessage(message);
         setSelectedCards([]);
       }
     }
@@ -131,6 +132,16 @@ function App() {
         })}
       </div>
       <div className="found-set-count">Sets found: {setsFound}</div>
+      {modalMessage && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={() => setModalMessage(null)}>
+              &times;
+            </span>
+            <p>{modalMessage}</p>
+          </div>
+        </div>
+      )}
     </>
   );
 }
