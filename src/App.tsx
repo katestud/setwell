@@ -17,6 +17,7 @@ function App() {
   const [cards, setCards] = useState<string[]>([]);
   const [remainingCards, setRemainingCards] = useState<string[]>([]);
   const [cardData, setCardData] = useState<Record<string, CardInfo>>({});
+  const [removingCards, setRemovingCards] = useState<string[]>([]);
   const nodeRefs = useRef<
     Record<string, React.RefObject<HTMLDivElement | null>>
   >({});
@@ -109,6 +110,7 @@ function App() {
         console.log("You win! That's a set!");
         setSetsFound((prevSetsFound) => prevSetsFound + 1);
         setShowConfetti(true);
+        setRemovingCards(selectedCards);
         setTimeout(() => setShowConfetti(false), 4000); // Hide confetti after 3 seconds
 
         setTimeout(() => {
@@ -121,6 +123,7 @@ function App() {
           });
           setSelectedCards([]);
           setSelectedIndices([]);
+          setRemovingCards([]);
         }, 300); // Delay to allow exit animation
       } else {
         const message = `Try again! The cards didn't have the right combination for ${badProps.join(
@@ -158,6 +161,15 @@ function App() {
                 timeout={300}
                 classNames="fade"
                 nodeRef={nodeRefs.current[cardId]}
+                onExited={() => {
+                  if (removingCards.includes(cardId)) {
+                    setCards((prevCards) => {
+                      const newCards = [...prevCards];
+                      newCards[index] = remainingCards.pop()!;
+                      return newCards;
+                    });
+                  }
+                }}
               >
                 <div ref={nodeRefs.current[cardId]}>
                   <Card
