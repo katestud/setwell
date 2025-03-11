@@ -25,8 +25,8 @@ function App() {
   useEffect(() => {
     const { cardData, allCards } = constructDeck();
     const shuffledCards = shuffle([...allCards]);
-    setCards(shuffledCards.slice(0, 16));
-    setRemainingCards(shuffledCards.slice(16));
+    setCards(shuffledCards.slice(0, 12));
+    setRemainingCards(shuffledCards.slice(12));
     setCardData(cardData);
   }, []);
 
@@ -47,6 +47,11 @@ function App() {
       return [...prevSelected, id];
     });
   };
+
+const dealMoreCards = (() => {
+  setCards((prevCards) => [...prevCards, ...remainingCards.slice(0, 3)]);
+  setRemainingCards((prevRemaining) => prevRemaining.slice(3));
+})
 
   useEffect(() => {
     if (selectedCards.length === 3) {
@@ -90,12 +95,20 @@ function App() {
 
         setTimeout(() => {
           const newRemainingCards = [...remainingCards];
-          const newCards = cards.map((card, idx) => {
+          let newCards
+          if (cards.length > 12) {
+            newCards = cards.filter(
+              (_, index) => !selectedIndices.includes(index)
+            );
+          } else {
+          newCards = cards.map((card, idx) => {
             if (selectedIndices.includes(idx)) {
               return newRemainingCards.pop() || ""; // Return empty string if no more cards
             }
             return card;
           });
+          }
+
 
           setCards(newCards);
           setRemainingCards(newRemainingCards);
@@ -122,60 +135,63 @@ function App() {
     return newArray;
   }
 
-  return (
-    <>
-      <h1>Setwell</h1>
-      <div className="card-container">
-        <TransitionGroup component={null}>
-          {cards.map((cardId, index) => {
-            const data = cardData[cardId];
-            if (!nodeRefs.current[cardId]) {
-              nodeRefs.current[cardId] = React.createRef();
-            }
-            return (
-              <CSSTransition
-                key={cardId}
-                timeout={300}
-                classNames="fade"
-                nodeRef={nodeRefs.current[cardId]}
-              >
-                <div ref={nodeRefs.current[cardId]}>
-                  {cardId && (
-                    <Card
-                      key={cardId}
-                      onClick={() => handleCardClick(cardId, index)}
-                      color={data.color}
-                      shape={data.shape}
-                      count={data.count}
-                      shading={data.shading}
-                      selected={selectedCards.includes(cardId)}
-                    />
-                  )}
-                </div>
-              </CSSTransition>
-            );
-          })}
-        </TransitionGroup>
+return (
+  <>
+    <h1>Setwell</h1>
+    <div className="card-container">
+      <TransitionGroup component={null}>
+        {cards.map((cardId, index) => {
+          const data = cardData[cardId];
+          if (!nodeRefs.current[cardId]) {
+            nodeRefs.current[cardId] = React.createRef();
+          }
+          return (
+            <CSSTransition
+              key={cardId}
+              timeout={300}
+              classNames="fade"
+              nodeRef={nodeRefs.current[cardId]}
+            >
+              <div ref={nodeRefs.current[cardId]}>
+                {cardId && (
+                  <Card
+                    key={cardId}
+                    onClick={() => handleCardClick(cardId, index)}
+                    color={data.color}
+                    shape={data.shape}
+                    count={data.count}
+                    shading={data.shading}
+                    selected={selectedCards.includes(cardId)}
+                  />
+                )}
+              </div>
+            </CSSTransition>
+          );
+        })}
+      </TransitionGroup>
+    </div>
+    <button onClick={dealMoreCards} disabled={remainingCards.length < 3}>
+      More Cards
+    </button>
+    <div className="game-stats">
+      <div className="found-set-count">Sets found: {setsFound}</div>
+      <div className="remaining-cards-count">
+        Cards remaining: {remainingCards.length}
       </div>
-      <div className="game-stats">
-        <div className="found-set-count">Sets found: {setsFound}</div>
-        <div className="remaining-cards-count">
-          Cards remaining: {remainingCards.length}
+    </div>
+    {modalMessage && (
+      <div className="modal">
+        <div className="modal-content">
+          <span className="close" onClick={() => setModalMessage(null)}>
+            &times;
+          </span>
+          <p>{modalMessage}</p>
         </div>
       </div>
-      {modalMessage && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close" onClick={() => setModalMessage(null)}>
-              &times;
-            </span>
-            <p>{modalMessage}</p>
-          </div>
-        </div>
-      )}
-      {showConfetti && <Confetti />}
-    </>
-  );
+    )}
+    {showConfetti && <Confetti />}
+  </>
+);
 }
 
 export default App;
