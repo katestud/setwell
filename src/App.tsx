@@ -8,6 +8,10 @@ import { Card } from "./components/card";
 import Confetti from "react-confetti";
 import React from "react";
 import { constructDeck } from "./utils/deck";
+import {
+  completedSetCardId,
+  possibleMatchingCards,
+} from "./utils/match-analysis";
 
 function App() {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
@@ -49,10 +53,22 @@ function App() {
     });
   };
 
-const dealMoreCards = (() => {
-  setCards((prevCards) => [...prevCards, ...remainingCards.slice(0, 3)]);
-  setRemainingCards((prevRemaining) => prevRemaining.slice(3));
-})
+  const dealMoreCards = () => {
+    const possibleMatches = possibleMatchingCards(cards);
+
+    const hasPossibleMatch = cards.some((cardId) =>
+      possibleMatches.includes(cardId)
+    );
+    if (hasPossibleMatch) {
+      console.log("There are possible matches in the current cards.");
+    } else {
+      console.log("No possible matches in the current cards.");
+    }
+
+    setCards((prevCards) => [...prevCards, ...remainingCards.slice(0, 3)]);
+    completedSetCardId(cards[0], cards[1]);
+    setRemainingCards((prevRemaining) => prevRemaining.slice(3));
+  };
 
   useEffect(() => {
     if (selectedCards.length === 3) {
@@ -96,20 +112,19 @@ const dealMoreCards = (() => {
 
         setTimeout(() => {
           const newRemainingCards = [...remainingCards];
-          let newCards
+          let newCards;
           if (cards.length > 12) {
             newCards = cards.filter(
               (_, index) => !selectedIndices.includes(index)
             );
           } else {
-          newCards = cards.map((card, idx) => {
-            if (selectedIndices.includes(idx)) {
-              return newRemainingCards.pop() || ""; // Return empty string if no more cards
-            }
-            return card;
-          });
+            newCards = cards.map((card, idx) => {
+              if (selectedIndices.includes(idx)) {
+                return newRemainingCards.pop() || ""; // Return empty string if no more cards
+              }
+              return card;
+            });
           }
-
 
           setCards(newCards);
           setRemainingCards(newRemainingCards);
@@ -126,6 +141,11 @@ const dealMoreCards = (() => {
         setSelectedIndices([]);
       }
     }
+
+    if (selectedCards.length === 2) {
+      const idealCard = completedSetCardId(selectedCards[0], selectedCards[1]);
+      console.log(idealCard);
+    }
   }, [selectedCards]);
 
   function shuffle(array: any[]) {
@@ -137,66 +157,66 @@ const dealMoreCards = (() => {
     return newArray;
   }
 
-return (
-  <>
-    <h1>Setwell</h1>
-    <div className="card-container">
-      <TransitionGroup component={null}>
-        {cards.map((cardId, index) => {
-          const data = cardData[cardId];
-          if (!nodeRefs.current[cardId]) {
-            nodeRefs.current[cardId] = React.createRef();
-          }
-          return (
-            <CSSTransition
-              key={cardId}
-              timeout={300}
-              classNames="fade"
-              nodeRef={nodeRefs.current[cardId]}
-            >
-              <div ref={nodeRefs.current[cardId]}>
-                {cardId && (
-                  <Card
-                    key={cardId}
-                    onClick={() => handleCardClick(cardId, index)}
-                    color={data.color}
-                    shape={data.shape}
-                    count={data.count}
-                    shading={data.shading}
-                    selected={selectedCards.includes(cardId)}
-                  />
-                )}
-              </div>
-            </CSSTransition>
-          );
-        })}
-      </TransitionGroup>
-    </div>
-    <button onClick={dealMoreCards} disabled={remainingCards.length < 3}>
-      More Cards
-    </button>
-    <div className="game-stats">
-      <div className="game-stats-text">
-        <p>Sets found: {setsFound}</p>
-        <p>Penalty: {mistakesMade}</p>
+  return (
+    <>
+      <h1>Setwell</h1>
+      <div className="card-container">
+        <TransitionGroup component={null}>
+          {cards.map((cardId, index) => {
+            const data = cardData[cardId];
+            if (!nodeRefs.current[cardId]) {
+              nodeRefs.current[cardId] = React.createRef();
+            }
+            return (
+              <CSSTransition
+                key={cardId}
+                timeout={300}
+                classNames="fade"
+                nodeRef={nodeRefs.current[cardId]}
+              >
+                <div ref={nodeRefs.current[cardId]}>
+                  {cardId && (
+                    <Card
+                      key={cardId}
+                      onClick={() => handleCardClick(cardId, index)}
+                      color={data.color}
+                      shape={data.shape}
+                      count={data.count}
+                      shading={data.shading}
+                      selected={selectedCards.includes(cardId)}
+                    />
+                  )}
+                </div>
+              </CSSTransition>
+            );
+          })}
+        </TransitionGroup>
       </div>
-      <div className="remaining-cards-count">
-        Cards remaining: {remainingCards.length}
-      </div>
-    </div>
-    {modalMessage && (
-      <div className="modal">
-        <div className="modal-content">
-          <span className="close" onClick={() => setModalMessage(null)}>
-            &times;
-          </span>
-          <p>{modalMessage}</p>
+      <button onClick={dealMoreCards} disabled={remainingCards.length < 3}>
+        More Cards
+      </button>
+      <div className="game-stats">
+        <div className="game-stats-text">
+          <p>Sets found: {setsFound}</p>
+          <p>Penalty: {mistakesMade}</p>
+        </div>
+        <div className="remaining-cards-count">
+          Cards remaining: {remainingCards.length}
         </div>
       </div>
-    )}
-    {showConfetti && <Confetti />}
-  </>
-);
+      {modalMessage && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={() => setModalMessage(null)}>
+              &times;
+            </span>
+            <p>{modalMessage}</p>
+          </div>
+        </div>
+      )}
+      {showConfetti && <Confetti />}
+    </>
+  );
 }
 
 export default App;

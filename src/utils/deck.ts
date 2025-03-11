@@ -1,6 +1,7 @@
 import { COLORS, SHADINGS, SHAPES } from "../types";
 
 import type { CardInfo } from "../types";
+import { idFromCard } from "./card";
 
 export function constructDeck(): {
   cardData: Record<string, CardInfo>;
@@ -18,8 +19,9 @@ export function constructDeck(): {
     for (const shape of shapes) {
       for (const count of counts) {
         for (const shading of shadings) {
-          const cardId = `${color}-${shape}-${count}-${shading}`;
-          cardData[cardId] = { color, shape, count, shading };
+          const cardInfo = { color, shape, count, shading };
+          const cardId = idFromCard(cardInfo);
+          cardData[cardId] = cardInfo;
           allCards.push(cardId);
         }
       }
