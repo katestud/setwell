@@ -13,6 +13,7 @@ function App() {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [setsFound, setSetsFound] = useState(0);
+  const [mistakesMade, setMistakesMade] = useState(0);
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [cards, setCards] = useState<string[]>([]);
@@ -116,6 +117,7 @@ const dealMoreCards = (() => {
           setSelectedIndices([]);
         }, 300);
       } else {
+        setMistakesMade((prevMistakesMade) => prevMistakesMade + 1);
         const message = `Try again! The cards didn't have the right combination for ${badProps.join(
           ", "
         )}`;
@@ -174,7 +176,10 @@ return (
       More Cards
     </button>
     <div className="game-stats">
-      <div className="found-set-count">Sets found: {setsFound}</div>
+      <div className="game-stats-text">
+        <p>Sets found: {setsFound}</p>
+        <p>Penalty: {mistakesMade}</p>
+      </div>
       <div className="remaining-cards-count">
         Cards remaining: {remainingCards.length}
       </div>

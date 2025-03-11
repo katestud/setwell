@@ -48,7 +48,7 @@ body {
   transform: scale(1.02);
 }
 
-.found-set-count {
+.game-stats-text {
   text-align: center;
   margin-top: 1rem;
   font-size: 1.2rem;
