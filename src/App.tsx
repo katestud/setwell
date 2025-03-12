@@ -56,11 +56,15 @@ function App() {
   const dealMoreCards = () => {
     const possibleMatches = possibleMatchingCards(cards);
 
-    const hasPossibleMatch = cards.some((cardId) =>
+    const matchingCards = cards.filter((cardId) =>
       possibleMatches.includes(cardId)
     );
-    if (hasPossibleMatch) {
-      console.log("There are possible matches in the current cards.");
+
+    if (matchingCards.length > 0) {
+      console.log(
+        "There are possible matches in the current cards:",
+        matchingCards
+      );
     } else {
       console.log("No possible matches in the current cards.");
     }
