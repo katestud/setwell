@@ -148,7 +148,15 @@ function App() {
 
     if (selectedCards.length === 2) {
       const idealCard = completedSetCardId(selectedCards[0], selectedCards[1]);
-      console.log(idealCard);
+      const cardPresentText = cards.includes(idealCard)
+        ? "on the board"
+        : "not present";
+      console.log(
+        "To complete the set, you need",
+        idealCard,
+        "and it is",
+        cardPresentText
+      );
     }
   }, [selectedCards]);
 
