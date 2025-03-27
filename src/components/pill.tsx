@@ -13,7 +13,7 @@ type PillIconProps = {
 export const PillIcon: React.FC<PillIconProps> = ({
   color,
   shading,
-  width = 50,
+  width = 40,
   height = 50,
 }) => {
   const id = useId();

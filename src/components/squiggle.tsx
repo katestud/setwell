@@ -13,7 +13,7 @@ type SquiggleIconProps = {
 export const SquiggleIcon: React.FC<SquiggleIconProps> = ({
   color,
   shading,
-  width = 30,
+  width = 40,
   height = 60,
 }) => {
   const id = useId();
