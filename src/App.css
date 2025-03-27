@@ -44,6 +44,10 @@ body {
   stroke-width: 4px;
 }
 
+.squiggle-icon {
+  stroke-width: 1px;
+}
+
 .card.selected {
   outline: 3px solid #4a90e2;
   transform: scale(1.02);
